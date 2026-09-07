@@ -73,7 +73,8 @@
 
             <div id="content-listening" class="tab-content active h-full overflow-y-auto p-6">
                 <div id="listening-sections" class="space-y-8">
-                    </div>
+                    <!-- 聽力內容自動生成 -->
+                </div>
                 
                 <div class="mt-8 pt-6 border-t border-gray-200 flex flex-col items-center pb-8">
                     <button onclick="nextToReading()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-12 rounded-lg shadow-lg transition duration-200 text-xl w-full max-w-lg flex items-center justify-center">
@@ -86,11 +87,13 @@
             <div id="content-reading" class="tab-content h-full">
                 <div class="split-view bg-white shadow-sm border-x border-b border-gray-200">
                     <div class="split-pane bg-gray-50" id="reading-passage">
-                        </div>
+                        <!-- 閱讀文章自動生成 -->
+                    </div>
                     <div class="split-pane bg-white pb-12">
                         <h3 class="text-2xl font-bold mb-6 text-blue-900 border-b-2 border-blue-100 pb-3">Questions (40 Items)</h3>
                         <div id="reading-questions" class="space-y-8">
-                            </div>
+                            <!-- 閱讀題目自動生成 -->
+                        </div>
                         
                         <div class="mt-10 pt-6 border-t border-gray-200 pb-8 flex flex-col items-center">
                             <button onclick="nextToWriting()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-12 rounded-lg shadow-lg transition duration-200 text-xl w-full max-w-lg flex items-center justify-center">
@@ -670,8 +673,6 @@
             }
         };
 
-        /* ================= 初始化與 UI 控制 ================= */
-        
         document.addEventListener('DOMContentLoaded', () => {
             renderListening();
             renderReading();
@@ -817,7 +818,7 @@
                 window.speechSynthesis.cancel(); 
                 
                 const htmlContent = document.getElementById(elementId).innerHTML;
-                const dialogues = parseDialogue(htmlContent); 
+                const dialogues = parseDialogue(htmlContent);
                 
                 dialogues.forEach(line => {
                     let utterance = new SpeechSynthesisUtterance(line.text);
@@ -919,9 +920,9 @@
                             <div class="space-y-4">
                                 ${q.subQuestions.map(sq => `
                                     <div class="text-lg" id="container-${sq.id}">
-                                        ${sq.prefix} 
-                                        <input type="text" id="${sq.id}" class="mx-2 p-1 border-b-2 border-gray-500 bg-white focus:outline-none focus:border-blue-600 text-center w-40 font-bold text-blue-800 shadow-inner rounded-sm" placeholder="your answer"> 
-                                        ${sq.suffix}
+                                        ${sq.prefix}
+                                         <input type="text" id="${sq.id}" class="mx-2 p-1 border-b-2 border-gray-500 bg-white focus:outline-none focus:border-blue-600 text-center w-40 font-bold text-blue-800 shadow-inner rounded-sm" placeholder="your answer">
+                                         ${sq.suffix}
                                     </div>
                                     <div id="exp-${sq.id}" class="hidden mb-4 text-base p-4 rounded bg-white border-l-4 shadow-sm"></div>
                                 `).join('')}
@@ -932,8 +933,6 @@
 
                 html += `</div></div>`;
             });
-            
-            // 移除多餘的按鈕程式碼
             
             container.innerHTML = html;
         }
@@ -1030,9 +1029,9 @@
                             <div class="space-y-5">
                                 ${q.subQuestions.map(sq => `
                                     <div class="text-lg leading-loose" id="container-${sq.id}">
-                                        ${sq.prefix} 
-                                        <input type="text" id="${sq.id}" class="mx-2 p-1 border-b-2 border-gray-500 bg-white focus:outline-none focus:border-blue-600 text-center w-40 font-bold text-blue-800 shadow-inner rounded-sm" placeholder="your answer"> 
-                                        ${sq.suffix}
+                                        ${sq.prefix}
+                                         <input type="text" id="${sq.id}" class="mx-2 p-1 border-b-2 border-gray-500 bg-white focus:outline-none focus:border-blue-600 text-center w-40 font-bold text-blue-800 shadow-inner rounded-sm" placeholder="your answer">
+                                         ${sq.suffix}
                                     </div>
                                     <div id="exp-${sq.id}" class="hidden mt-2 mb-4 text-base p-4 rounded bg-white border-l-4 shadow-sm"></div>
                                 `).join('')}
@@ -1041,8 +1040,6 @@
                     }
                 });
             });
-
-            // 移除多餘的按鈕程式碼
 
             passageContainer.innerHTML = passagesHtml;
             qContainer.innerHTML = questionsHtml;
@@ -1108,7 +1105,7 @@
 
         // 依據雅思官方 40 題對照表計算 Band Score
         function calculateBand(score, type, mode = 'academic') {
-            if (score === 0) return 0.0; 
+            if (score === 0) return 0.0;
             
             if (type === 'listening' || (type === 'reading' && mode === 'academic')) {
                 if (score >= 39) return 9.0;
@@ -1229,6 +1226,10 @@
                                 }
                             }
                         }
+                        
+                        // 修正：確實將答對的題數加入分數
+                        if (isCorrect) score++;
+                        
                         showFeedback(sq.id, isCorrect, sq.answer, sq.explanation);
                     });
                 });
@@ -1451,11 +1452,12 @@
                 }
             } catch (error) {
                 console.error(error);
-                msgEl.textContent = "❌ 發送失敗，請檢查網路連線";
+                // 修正：提供更具體的失敗提示，並將按鈕文字更改為「再按一次進行傳輸」
+                msgEl.textContent = "❌ 傳送失敗：可能是網路不穩定、伺服器無回應或瀏覽器阻擋，請稍後重試。";
                 msgEl.classList.remove('hidden', 'text-green-400');
                 msgEl.classList.add('text-yellow-300');
                 btn.disabled = false;
-                btn.textContent = "重新寄送";
+                btn.textContent = "再按一次進行傳輸";
                 btn.classList.add('animate-pulse');
             }
         }
